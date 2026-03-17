@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>QCM Permis Alberta</title>
+<style>
+body{
+    font-family: Arial;
+    background: #f4f4f4;
+    padding: 30px;
+}
+.container{
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+h2{text-align:center;}
+button{
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background: #eee;
+    text-align: left;
+}
+button:hover{background: #ddd;}
+.correct{background:#6bd96b !important;}
+.wrong{background:#ff6b6b !important;}
+#nextBtn{display:none; background:#4da3ff; color:white;}
+#prevBtn,#skipBtn{background:#ffa500; color:white;}
+#navBtns{
+    display:flex;
+    gap:10px;
+    margin: 10px 0;
+}
+#navBtns button{
+    flex:1;
+}
+img{
+    max-width:300px;
+    display:block;
+    margin:20px auto;
+}
+#result{
+    font-size:20px;
+    text-align:center;
+    margin-top:20px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>QCM Permis Alberta</h2>
+<p><span id="questionNumber">Question 1/10</span></p>
+<p>Points : <span id="score">0</span> | Erreurs : <span id="errors">0</span></p>
+<div id="quiz"></div>
+
+<div id="navBtns">
+    <button id="prevBtn">Précédent</button>
+    <button id="skipBtn">Passer</button>
+    <button id="nextBtn">Question suivante</button>
+</div>
+
+<div id="result"></div>
+</div>
+
+<script>
+const questions = [
+    {
+        question:"1.) Sauf indication contraire, quelle est la limite de vitesse de base à l'extérieur d'une ville ?",
+        answers:[
+            {text:"100 km/h", correct:true},
+            {text:"90 km/h", correct:false},
+            {text:"110 km/h", correct:false},
+            {text:"80 km/h", correct:false}
+        ]
+    },
+    {
+        question:"2.) Lorsqu'il fait reculer une voiture de tourisme sur la gauche, le conducteur doit :",
+        answers:[
+            {text:"Regarder dans le rétroviseur intérieur", correct:false},
+            {text:"Regarder par-dessus son épaule droite", correct:false},
+            {text:"Regarder par-dessus l'épaule gauche", correct:true},
+            {text:"Utiliser seulement les rétroviseurs", correct:false}
+        ]
+    },
+    {
+        question:"3.) À l'approche d'une intersection et face à un feu de signalisation indiquant une flèche verte de virage à droite et un feu rouge, un chauffeur :",
+        answers:[
+            {text:"Il faut s'arrêter et attendre un feu vert avant de tourner", correct:false},
+            {text:"Peut traverser l'intersection sans s'arrêter", correct:false},
+            {text:"Peut continuer en toute sécurité, sans s'arrêter, dans le sens de la flèche", correct:true},
+            {text:"Peut tourner à gauche sans s'arrêter", correct:false}
+        ]
+    },
+    {
+        question:"4.) L'Alberta a un système de points d'inaptitude où un conducteur pleinement titulaire d'un permis est suspendu quand ils s'accumulent :",
+        answers:[
+            {text:"15 points", correct:true},
+            {text:"8 points", correct:false},
+            {text:"5 points", correct:false},
+            {text:"12 points", correct:false}
+        ]
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let errors = 0;
+let userAnswers = Array(questions.length).fill(null);
+
+const quiz = document.getElementById("quiz");
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+const skipBtn = document.getElementById("skipBtn");
+const scoreEl = document.getElementById("score");
+const errorsEl = document.getElementById("errors");
+const questionNumberEl = document.getElementById("questionNumber");
+
+function showQuestion(){
+    quiz.innerHTML = "";
+    nextBtn.style.display = "none";
+
+    const q = questions[currentQuestion];
+    questionNumberEl.textContent = `Question ${currentQuestion+1}/${questions.length}`;
+
+    // Question
+    quiz.innerHTML = "<h3>"+q.question+"</h3>";
+
+    if(q.image){
+        const img = document.createElement("img");
+        img.src = q.image;
+        quiz.appendChild(img);
+    }
+
+    q.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        const letter = String.fromCharCode(97 + index); // a, b, c, d
+        btn.textContent = `${letter}. ${answer.text}`;
+
+        btn.onclick = () => selectAnswer(btn, answer);
+
+        // Si question déjà répondue
+        if(userAnswers[currentQuestion]){
+            btn.disabled = true;
+            if(answer.text === userAnswers[currentQuestion].selected){
+                btn.classList.add(answer.correct ? "correct" : "wrong");
+            }
+            if(answer.correct && answer.text !== userAnswers[currentQuestion].selected){
+                btn.classList.add("correct");
+            }
+        }
+
+        quiz.appendChild(btn);
+    });
+}
+
+function selectAnswer(button, answer){
+    const buttons = quiz.querySelectorAll("button");
+    buttons.forEach(b=>b.disabled=true);
+
+    const correctAnswer = questions[currentQuestion].answers.find(a=>a.correct).text;
+
+    if(answer.correct){
+        button.classList.add("correct");
+        score++;
+    } else {
+        button.classList.add("wrong");
+        errors++;
+        const info = document.createElement("p");
+        info.innerHTML = "<b>Bonne réponse :</b> "+correctAnswer;
+        quiz.appendChild(info);
+    }
+
+    scoreEl.textContent = score;
+    errorsEl.textContent = errors;
+
+    userAnswers[currentQuestion] = {selected: answer.text, correct: answer.correct};
+
+    nextBtn.style.display = "block";
+}
+
+nextBtn.onclick = () => {
+    if(currentQuestion < questions.length -1){
+        currentQuestion++;
+        showQuestion();
+    } else {
+        quiz.innerHTML = "";
+        nextBtn.style.display = "none";
+        prevBtn.style.display = "none";
+        skipBtn.style.display = "none";
+        document.getElementById("result").innerHTML = `Test terminé !<br>Score : ${score} / ${questions.length}<br>Erreurs : ${errors}`;
+    }
+};
+
+prevBtn.onclick = () => {
+    if(currentQuestion > 0){
+        currentQuestion--;
+        showQuestion();
+    }
+};
+
+skipBtn.onclick = () => {
+    if(!userAnswers[currentQuestion]){
+        errors++;
+        errorsEl.textContent = errors;
+        const correctAnswer = questions[currentQuestion].answers.find(a=>a.correct).text;
+        alert(`Question passée ! La bonne réponse était : ${correctAnswer}`);
+        userAnswers[currentQuestion] = {selected:null, correct:false};
+    }
+    if(currentQuestion < questions.length-1){
+        currentQuestion++;
+        showQuestion();
+    }
+};
+
+showQuestion();
+</script>
+</body>
+</html>

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>QCM Permis Alberta</title>
+<style>
+body{
+    font-family: Arial;
+    background: #f4f4f4;
+    padding: 30px;
+}
+.container{
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+h2{text-align:center;}
+button{
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background: #eee;
+    text-align: left;
+}
+button:hover{background: #ddd;}
+.correct{background:#6bd96b !important;}
+.wrong{background:#ff6b6b !important;}
+#nextBtn{display:none; background:#4da3ff; color:white;}
+#prevBtn,#skipBtn{background:#ffa500; color:white;}
+#navBtns{
+    display:flex;
+    gap:10px;
+    margin: 10px 0;
+}
+#navBtns button{
+    flex:1;
+}
+img{
+    max-width:300px;
+    display:block;
+    margin:20px auto;
+}
+#result{
+    font-size:20px;
+    text-align:center;
+    margin-top:20px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>QCM Permis Alberta</h2>
+<p><span id="questionNumber">Question 1/10</span></p>
+<p>Points : <span id="score">0</span> | Erreurs : <span id="errors">0</span></p>
+<div id="quiz"></div>
+
+<div id="navBtns">
+    <button id="prevBtn">Précédent</button>
+    <button id="skipBtn">Passer</button>
+    <button id="nextBtn">Question suivante</button>
+</div>
+
+<div id="result"></div>
+</div>
+
+<script>
+const questions = [
+    {
+question:"1.) Sauf indication contraire, quelle est la limite de vitesse de base à l'extérieur d'une ville ou d'un village sur une route principale ?",
+answers:[
+{text:"100 km/h", correct:true},
+{text:"90 km/h", correct:false},
+{text:"110 km/h", correct:false},
+{text:"80 km/h", correct:false}
+]
+},
+{
+question:"2.) Lorsqu'il fait reculer une voiture de tourisme sur la gauche, le conducteur doit :",
+answers:[
+{text:"Regarder dans le rétroviseur intérieur et faire les ajustements de direction nécessaires", correct:false},
+{text:"Regarder par-dessus son épaule droite en jetant de temps en temps un coup d'oeil vers l'avant.", correct:false},
+{text:"Regardez par-dessus l'épaule gauche en jetant de temps en temps un coup d'oeil vers l'avant.", correct:true},
+{text:"Sans vérifier l'épaule, utiliser les rétroviseurs intérieur et extérieur pour s'assurer de la meilleure vue vers l'arrière et les deux côtés du véhicule.", correct:false}
+]
+},
+{
+question:"3.) À l'approche d'une intersection et face à un feu de signalisation indiquant une flèche verte de virage à droite et un feu rouge, un chauffeur :",
+answers:[
+{text:"Il faut s'arrêter et attendre un feu vert avant de tourner dans le sens de la flèche", correct:false},
+{text:"Peut traverser l'intersection sans s'arrêter", correct:false},
+{text:"Peut continuer en toute sécurité, sans s'arrêter, dans le sens de la flèche", correct:true},
+{text:"Peut tourner à gauche sans s'arrêter", correct:false}
+]
+},
+{
+question:"4.) L'Alberta a un système de points d'inaptitude où un conducteur pleinement titulaire d'un permis (non apprenant, non probatoire) est suspendu quand ils s'accumulent :",
+answers:[
+{text:"15 points", correct:true},
+{text:"8 points", correct:false},
+{text:"5 points", correct:false},
+{text:"12 points", correct:false}
+]
+},
+{
+question:"5.) Lors du dépassement d'un gros camion sur une autoroute à double sens, un conducteur doit :",
+answers:[
+{text:"Laisser de la place supplémentaire avant de retourner dans leur couloir", correct:true},
+{text:"Retourner dans leur voie lorsque signalé par les phares du camion", correct:false},
+{text:"Retournez dans leur voie lorsque le camion n'est plus visible dans aucun de leurs rétroviseurs", correct:false},
+{text:"Retournez dans leur voie une fois qu'ils ont dégagé le pare-chocs avant du camion", correct:false}
+]
+},
+{
+question:"6.) Quelle affirmation décrit le mieux les étapes pour tourner à droite à un feu rouge ?",
+answers:[
+{text:"Les virages à droite au feu rouge ne sont jamais autorisés", correct:false},
+{text:"Signalez et assurez-vous qu'il n'y a pas de panneau interdisant de tourner, arrêtez-vous, regardez à gauche et à droite, cédez le passage, puis continuez", correct:true},
+{text:"Réduisez la vitesse avant le virage, regardez à droite pour les cyclistes, signalez et avancez", correct:false},
+{text:"Signalez et réduisez la vitesse avant le virage, regardez à gauche, cédez le passage aux véhicules et continuez", correct:false}
+]
+},
+{
+question:"7.) Ce signe indique :",
+image:"images/img1.png",
+answers:[
+{text:"Itinéraire pour les véhicules de plus de 4500 kg", correct:false},
+{text:"Itinéraire pour véhicules lents", correct:false},
+{text:"Voie réservée aux bus", correct:false},
+{text:"Route des marchandises dangereuses", correct:true}
+]
+},
+{
+question:"8.) Une seule ligne blanche continue entre les voies de circulation dans une zone urbaine signifie :",
+answers:[
+{text:"Il s'agit d'une ligne qui sépare les véhicules circulant en sens inverse.", correct:false},
+{text:"La circulation sur la droite est plus rapide que la circulation sur la gauche.", correct:false},
+{text:"Le changement de voie n'est pas autorisé", correct:true},
+{text:"Le changement de voie est autorisé", correct:false}
+]
+},
+{
+question:"9.) Une \"voie de stationnement\", telle que définie dans le Manuel du conducteur du permis de base, est :",
+answers:[
+{text:"Une voie la plus proche du trottoir, où le stationnement est autorisé mais où il n'y a pas de parcomètres.", correct:false},
+{text:"Toutes ces réponses sont correctes", correct:true},
+{text:"La partie d'une route principale comprise entre le bord de la chaussée à droite du sens de la circulation et la ligne blanche pleine la plus proche, qui n'est pas la ligne médiane, marquée sur la chaussée.", correct:false},
+{text:"Une voie située immédiatement à côté d'une rangée de parcmètres dans une zone urbaine.", correct:false}
+]
+},
+{
+question:"10.) Moyens de vérification des épaules :",
+answers:[
+{text:"Un coup d'oeil vers l'angle mort dans la direction où le conducteur a l'intention de se déplacer.", correct:true},
+{text:"Regarder dans le rétroviseur extérieur gauche", correct:false},
+{text:"En jetant un coup d'oeil à la fois dans les rétroviseurs intérieur et extérieur.", correct:false},
+{text:"Regarder dans le rétroviseur extérieur droit", correct:false}
+]
+},
+{
+question:"11.) Ce signe indique :",
+image:"images/img2.png",
+answers:[
+{text:"Des installations hors route devant vous", correct:false},
+{text:"Glissant lorsqu'il est mouillé", correct:false},
+{text:"Chaussée irrégulière, Chaussée surbaissée", correct:true},
+{text:"Détour à venir", correct:false}
+]
+},
+{
+question:"12.) Un feu de contrôle de voie de circulation avec un \"X\" rouge allumé signifie :",
+answers:[
+{text:"Préparez-vous à recevoir un véhicule d'urgence circulant sur cette voie.", correct:false},
+{text:"Réduire la vitesse en dessous de 30 km/h", correct:false},
+{text:"Utiliser cette voie uniquement pour effectuer un virage à gauche.", correct:false},
+{text:"La circulation est interdite sur cette voie", correct:true}
+]
+},
+{
+question:"13.) Un parent a-t-il le droit de retirer un \"consentement parental\" donné précédemment pour une personne de moins de 18 ans en ce qui concerne un permis de conduire ?",
+answers:[
+{text:"Oui, à condition que la personne soit toujours âgée de moins de 18 ans et qu'elle ne soit pas autonome ou mariée.", correct:true},
+{text:"Oui, à condition que les deux parents acceptent verbalement de retirer le consentement dans un bureau d'enregistrement.", correct:false},
+{text:"Non, une fois donné, il reste en vigueur jusqu'à ce que la personne atteigne l'âge de 18 ans.", correct:false},
+{text:"Non, mais un autre formulaire de consentement doit être signé par les deux parents après une suspension de permis.", correct:false}
+]
+},
+{
+question:"14.) Cette signature indique :",
+image:"images/img3.png",
+answers:[
+{text:"Ne pas entrer", correct:false},
+{text:"Véhicules d'urgence entrant sur la chaussée", correct:false},
+{text:"La voie désignée est fermée", correct:false},
+{text:"Passage à niveau", correct:true}
+]
+},
+{
+question:"15.) Lorsqu'il se gare en descente sur une route à double sens, un conducteur doit :",
+answers:[
+{text:"Tourner les roues avant vers la bordure ou le bord de la chaussée et serrer le frein de stationnement.", correct:true},
+{text:"Garder les roues avant en ligne droite et serrer le frein de stationnement.", correct:false},
+{text:"Tourner les roues avant en s'éloignant du trottoir ou du bord de la route et serrer le frein de stationnement.", correct:false},
+{text:"Serrez le frein de stationnement uniquement", correct:false}
+]
+},
+{
+question:"16.) Si un conducteur est suivi par un véhicule qui tente de le dépasser sur une route à double sens, il doit :",
+answers:[
+{text:"Rester dans sa voie et se déplacer vers la partie droite de la voie.", correct:true},
+{text:"Allumer le signal de droite et rouler dans la voie de stationnement.", correct:false},
+{text:"Allumer le clignotant gauche et rester dans la voie de circulation", correct:false},
+{text:"Restez dans la voie et passez à la partie gauche de la voie.", correct:false}
+]
+},
+{
+question:"17.) La procédure de freinage recommandée pour amener un véhicule à un arrêt normal et en douceur est :",
+answers:[
+{text:"Augmenter continuellement la pression de freinage jusqu'à ce que les roues se bloquent", correct:false},
+{text:"Appliquer la pression de freinage, relâcher légèrement la pression juste avant que le véhicule ne s'arrête, puis appliquer à nouveau une pression suffisante pour arrêter le véhicule.", correct:true},
+{text:"Mettez le véhicule au point mort et exercez une pression constante sur la pédale de frein jusqu'à ce que le véhicule s'arrête.", correct:false},
+{text:"Pompez la pédale de frein en douceur jusqu'à ce que le véhicule s'arrête.", correct:false}
+]
+},
+{
+question:"18.) Quelle affirmation décrit les étapes nécessaires pour effectuer une marche arrière en ligne droite ?",
+answers:[
+{text:"Placer la main gauche en haut du volant et regarder par-dessus l'épaule droite à travers la lunette arrière.", correct:false},
+{text:"Placer la main droite en haut du volant, regarder par-dessus l'épaule gauche et utiliser le rétroviseur extérieur gauche.", correct:true},
+{text:"Placez la main gauche en bas du volant et utilisez les deux rétroviseurs extérieurs", correct:false},
+{text:"Gardez les deux mains sur le volant et utilisez constamment le rétroviseur intérieur pour vous guider.", correct:false}
+]
+},
+{
+question:"19.) La meilleure description d'une \"zone de tissage\" est la suivante :",
+answers:[
+{text:"Un endroit sur une autoroute où les voies d'entrée et de sortie sont rapprochées et où les véhicules qui ralentissent pour sortir de l'autoroute doivent circuler entre des véhicules qui accélèrent pour entrer sur l'autoroute.", correct:true},
+{text:"Un endroit où l'autoroute comporte une série de virages qui obligent le conducteur à ralentir.", correct:false},
+{text:"Une zone de l'autoroute qui est utilisée pour le stationnement d'urgence.", correct:false},
+{text:"Une zone d'accès limité sur une autoroute où un conducteur peut légalement reculer son véhicule lorsqu'il manque sa sortie.", correct:false}
+]
+},
+{
+question:"20.) Quand un double virage est autorisé à une intersection ?",
+answers:[
+{text:"Seulement quand on tourne d'une route à sens unique vers une route à sens unique.", correct:false},
+{text:"Chaque fois qu'il y a au moins deux voies sur la route dans laquelle on s'engage.", correct:false},
+{text:"Seulement lorsque cela est indiqué par des marques sur la chaussée ou des panneaux de contrôle de la circulation.", correct:true},
+{text:"Seulement lorsque la route a 6 voies ou plus.", correct:false}
+]
+},
+{
+question:"21.) Lorsque vous approchez d'un panneau \"Cédez le passage\", vous devez :",
+answers:[
+{text:"Cédez le passage aux véhicules qui ne font pas face au panneau et à tous les piétons dans l'intersection.", correct:true},
+{text:"Toujours actionner le klaxon pour avertir les autres véhicules de l'intersection.", correct:false},
+{text:"Attendez-vous à ce que tous les autres véhicules vous cèdent le passage.", correct:false},
+{text:"S'arrêter et avancer après avoir regardé à droite et à gauche.", correct:false}
+]
+},
+{
+question:"22.) L'expression \"surmener\" vos phares la nuit signifie :",
+answers:[
+{text:"Le conducteur ne peut pas voir clairement sur 1000 mètres", correct:false},
+{text:"Les feux de croisement ne sont pas réglés correctement", correct:false},
+{text:"Le conducteur roule à une vitesse qui ne lui permettrait pas de voir un objet à temps pour s'arrêter", correct:true},
+{text:"Le conducteur a laissé ses phares allumés pendant trop longtemps.", correct:false}
+]
+},
+{
+question:"23.) Dans le cadre du programme de permis de conduire progressif, un conducteur recevra 2 points d'inaptitude :",
+answers:[
+{text:"Pour avoir plus de passagers qu'il n'y a de ceintures de sécurité", correct:true},
+{text:"Pour ne pas porter une ceinture de sécurité bien attachée", correct:false},
+{text:"Pour ne pas avoir bouclé sa ceinture de sécurité", correct:false},
+{text:"Pour ne pas avoir porté une ceinture de sécurité correctement ajustée", correct:false}
+]
+},
+{
+question:"24.) Utiliser la règle des 2 secondes pour juger de la distance de sécurité à suivre en conduisant :",
+answers:[
+{text:"Est plus précise sur les routes rurales que dans les centres urbains", correct:false},
+{text:"N'est pas exacte à des vitesses supérieures à 100 km/h", correct:false},
+{text:"Est précis à n'importe quelle vitesse", correct:true},
+{text:"N'est pas précis à des vitesses inférieures à 100 km/h", correct:false}
+]
+},
+{
+question:"25.) Ce signe indique :",
+image:"images/img4.png",
+answers:[
+{text:"La circulation en provenance de la droite", correct:false},
+{text:"Une route sinueuse devant vous", correct:false},
+{text:"Virage à droite", correct:true},
+{text:"Intersection cachée à droite", correct:false}
+]
+},
+{
+question:"26.) Un conducteur qui s'approche d'un feu rouge clignotant doit :",
+answers:[
+{text:"S'arrêter et attendre le feu vert clignotant", correct:false},
+{text:"Réduire sa vitesse et avancer avec prudence", correct:false},
+{text:"S'arrêter et avancer seulement lorsque la sécurité le permet", correct:true},
+{text:"S'arrêter jusqu'à ce que le signal lumineux devienne vert", correct:false}
+]
+},
+{
+question:"27.) Ce signe indique :",
+image:"images/img5.png",
+answers:[
+{text:"Ne pas entrer", correct:false},
+{text:"Véhicules lents devant vous", correct:false},
+{text:"Avertissement, panneau \"Cédez le passage\" devant vous", correct:true},
+{text:"Avertissement, circulation en approche", correct:false}
+]
+},
+{
+question:"28.) Selon la loi de l'Alberta, il incombe au conducteur de s'assurer que tous les passagers de moins de quel âge sont correctement attachés dans le véhicule ?",
+answers:[
+{text:"18 ans", correct:false},
+{text:"24 ans", correct:false},
+{text:"21 ans", correct:false},
+{text:"16 ans", correct:true}
+]
+},
+{
+question:"29.) Lors d'un stationnement parallèle, les roues du véhicule les plus proches de la bordure doivent se trouver à quelle distance maximale ?",
+answers:[
+{text:"80 cm de la bordure du trottoir", correct:false},
+{text:"30 cm de la bordure du trottoir", correct:false},
+{text:"10 cm de la bordure du trottoir", correct:false},
+{text:"50 cm de la bordure du trottoir", correct:true}
+]
+},
+{
+question:"30.) Qui est responsable et légalement tenu de signaler tout problème médical, tout changement de santé ou tout handicap physique susceptible d'affecter la capacité de conduire d'un conducteur ?",
+answers:[
+{text:"L'employeur du conducteur", correct:false},
+{text:"Le conducteur", correct:true},
+{text:"Le médecin du conducteur", correct:false},
+{text:"La compagnie d'assurance du conducteur", correct:false}
+]
+},
+{
+question:"31.) Lorsqu'un véhicule est arrêté pour permettre à un piéton de traverser la route, les autres véhicules qui arrivent par l'arrière. :",
+answers:[
+{text:"Peuvent dépasser le véhicule arrêté lorsque le signal de passage pour piétons est passé à \"Ne marchez pas\".", correct:false},
+{text:"Peuvent dépasser le véhicule arrêté lorsque le piéton établit un contact visuel avec lui et qu'il s'arrête.", correct:false},
+{text:"Ne doit pas dépasser le véhicule arrêté. C'est illégal", correct:true},
+{text:"Peut dépasser le véhicule arrêté s'il n'y a pas de circulation en sens inverse qui pourrait l'empêcher de passer en toute sécurité.", correct:false}
+]
+},
+{
+question:"32.) Sauf autorisation contraire, dans quelle voie doit se trouver un conducteur pour tourner à gauche sur une route à sens unique ?",
+answers:[
+{text:"La voie du centre", correct:false},
+{text:"La voie la plus proche du trottoir de droite", correct:false},
+{text:"La voie de gauche la plus proche de la bordure de gauche", correct:true},
+{text:"La voie à droite du centre", correct:false}
+]
+},
+{
+question:"33.) Lorsqu'un conducteur s'arrête derrière un autre véhicule dans la circulation :",
+answers:[
+{text:"Reculez d'environ 1 mètre par rapport au pare-chocs arrière du véhicule qui vous précède.", correct:false},
+{text:"Laisser un espace suffisant pour passer sur une autre voie sans faire marche arrière.", correct:true},
+{text:"Rester à un minimum de 10 mètres du véhicule qui précède", correct:false},
+{text:"Maintenir un espace suffisant tel que déterminé par la règle des 2 secondes.", correct:false}
+]
+},
+{
+question:"34.) Ce signe indique :",
+image:"images/img6.png",
+answers:[
+{text:"Les véhicules peuvent tourner à gauche ou aller tout droit", correct:false},
+{text:"Les virages à gauche sont interdits", correct:false},
+{text:"Virage à gauche en double file", correct:true},
+{text:"Virage serré à gauche sur la route", correct:false}
+]
+},
+{
+question:"35.) Ce signe indique :",
+image:"images/img7.png",
+answers:[
+{text:"Cédez le passage aux piétons et à la circulation.", correct:false},
+{text:"Plaque de véhicule de marchandises dangereuses : gaz inflammable", correct:false},
+{text:"Véhicule lent", correct:true},
+{text:"Avertissement, panneau \"Cédez le passage\" devant vous", correct:false}
+]
+},
+{
+question:"36.) Pourquoi n'est-il pas prudent de dépasser un camion de transport de bois chargé qui tourne ?",
+answers:[
+{text:"Le conducteur du camion doit se concentrer entièrement sur le virage et n'a pas besoin de la responsabilité supplémentaire d'un véhicule qui le dépasse.", correct:false},
+{text:"Les camions grumiers chargés respectent la règle des 6 secondes pour les virages.", correct:false},
+{text:"Il existe une zone de danger, car le déversement des grumes de la partie haute du camion peut bloquer toutes les voies de l'autoroute pendant le virage.", correct:true},
+{text:"Il est illégal de le faire", correct:false}
+]
+},
+{
+question:"37.) Ce signe indique :",
+image:"images/img8.png",
+answers:[
+{text:"Une route sinueuse devant vous", correct:true},
+{text:"Changement de voie autorisé", correct:false},
+{text:"Glissant lorsqu'il est mouillé", correct:false},
+{text:"Zone de tissage devant", correct:false}
+]
+},
+{
+question:"38.) Un panneau \"véhicule lent\" doit être apposé à l'arrière de tout véhicule qui circule normalement à une vitesse inférieure à :",
+answers:[
+{text:"70 km/h", correct:false},
+{text:"50 km/h", correct:false},
+{text:"40 km/h", correct:true},
+{text:"60 km/h", correct:false}
+]
+},
+{
+question:"39.) Ce signe indique :",
+image:"images/img9.png",
+answers:[
+{text:"Zone de jeux à venir", correct:false},
+{text:"Passage pour piétons à venir", correct:false},
+{text:"Arrêt de bus scolaire devant vous", correct:true},
+{text:"Zone scolaire droit devant", correct:false}
+]
+},
+{
+question:"40.) Lorsque vous rencontrez un cortège funèbre qui traverse une intersection :",
+answers:[
+{text:"Actionner le klaxon avant d'avancer", correct:false},
+{text:"Traverser le cortège funèbre seulement s'il y a suffisamment d'espace entre les véhicules.", correct:false},
+{text:"Cédez le passage et ne perdez pas le cortège.", correct:true},
+{text:"Allumer les feux de route avant d'avancer", correct:false}
+]
+},
+{
+question:"41.) Lorsqu'il circule en zone urbaine, le conducteur doit balayer la route d'un regard approximatif :",
+answers:[
+{text:"25 à 30 secondes avant", correct:false},
+{text:"20 à 30 secondes devant lui", correct:false},
+{text:"12 à 15 secondes d'avance", correct:true},
+{text:"1 à 6 secondes d'avance", correct:false}
+]
+},
+{
+question:"42.) Un conducteur est-il autorisé à dépasser la vitesse limite lorsqu'il double un autre véhicule ?",
+answers:[
+{text:"Oui, sur les routes principales uniquement", correct:false},
+{text:"Non, ce n'est jamais autorisé", correct:true},
+{text:"Oui, mais pas plus de 10 km/h au-dessus de la vitesse autorisée", correct:false},
+{text:"Seulement pour dépasser plus d'un véhicule à la fois.", correct:false}
+]
+},
+{
+question:"43.) Si les pneus droits du véhicule sortent de la partie pavée de la chaussée :",
+answers:[
+{text:"Appliquer fermement les freins et contre-braquer pour revenir sur la partie pavée de la chaussée.", correct:false},
+{text:"Tenir fermement le volant, relâcher la pédale d'accélérateur, puis revenir progressivement sur la partie pavée de la chaussée.", correct:false},
+{text:"Accélérer légèrement, puis tourner brusquement le volant pour revenir sur la partie asphaltée de la route.", correct:true},
+{text:"Déplacer le véhicule complètement hors de la partie pavée de la route, puis tourner le volant pour revenir sur la partie pavée de la route.", correct:false}
+]
+},
+{
+question:"44.) Dans le manuel du conducteur du permis de base, la \"nuit\" est définie comme la période de temps :",
+answers:[
+{text:"Commençant 1 heure avant le coucher du soleil et se terminant 1 heure après le lever du soleil suivant.", correct:false},
+{text:"Commençant au coucher du soleil et se terminant au lever du soleil suivant.", correct:false},
+{text:"Commençant 1 heure après le coucher du soleil et se terminant 1 heure avant le lever du soleil suivant", correct:true},
+{text:"Entre 19 heures et 7 heures du matin", correct:false}
+]
+},
+{
+question:"45.) Une voie de décélération est :",
+answers:[
+{text:"une voie où les véhicules réduisent leur vitesse à la sortie d'une autoroute", correct:true},
+{text:"la voie de droite d'une autoroute à quatre voies destinée aux véhicules qui se déplacent plus lentement", correct:false},
+{text:"une voie réservée aux véhicules lents sur les collines", correct:false},
+{text:"la voie située immédiatement à droite d'une ligne jaune continue sur une autoroute.", correct:false}
+]
+},
+{
+question:"46.) Ce panneau indique :",
+image:"images/img10.png",
+answers:[
+{text:"Une zone scolaire", correct:false},
+{text:"Passage pour piétons devant l'école", correct:true},
+{text:"Zone de la cour de récréation", correct:false},
+{text:"Feux pour piétons en vue", correct:false}
+]
+},
+{
+question:"47.) Lors d'un stationnement en angle, la roue avant du véhicule doit se trouver à quelle distance maximale de la bordure la plus proche ?",
+answers:[
+{text:"100 cm", correct:false},
+{text:"50 cm", correct:true},
+{text:"25 cm", correct:false},
+{text:"75 cm", correct:false}
+]
+},
+{
+question:"48.) Selon le manuel du conducteur du permis de base, la plupart des dérapages sont le résultat de :",
+answers:[
+{text:"D'une erreur du conducteur", correct:true},
+{text:"De mauvais pneus", correct:false},
+{text:"De mauvais freins", correct:false},
+{text:"De routes glacées", correct:false}
+]
+},
+{
+question:"49.) À un panneau d'arrêt, un conducteur doit :",
+answers:[
+{text:"S'arrêter dans une position où la visibilité est la plus grande.", correct:false},
+{text:"S'arrêter 10 mètres avant un passage pour piétons marqué ou une ligne d'arrêt", correct:false},
+{text:"S'arrêter sur le passage pour piétons marqué ou sur la ligne d'arrêt.", correct:false},
+{text:"S'arrêter avant de s'engager sur un passage pour piétons ou de franchir une ligne d'arrêt.", correct:true}
+]
+},
+{
+question:"50.) Que signifie un feu de signalisation jaune clignotant ?",
+answers:[
+{text:"Procédez avec prudence", correct:true},
+{text:"Le feu va passer au vert", correct:false},
+{text:"Arrêtez-vous jusqu'à ce que le feu cesse de clignoter", correct:false},
+{text:"Le feu passe au rouge", correct:false}
+]
+},
+{
+question:"51.) À quelle distance d'un panneau d'arrêt un conducteur peut-il légalement garer son véhicule ?",
+answers:[
+{text:"1,5 mètre", correct:false},
+{text:"5 mètres", correct:true},
+{text:"10 mètres", correct:false},
+{text:"3 mètres", correct:false}
+]
+},
+{
+question:"52.) Avant de quitter une place de stationnement parallèle sur le côté droit d'une route :",
+answers:[
+{text:"Vérifier l'épaule à droite", correct:false},
+{text:"Allumez le signal de droite", correct:false},
+{text:"Vérifier l'épaule à gauche", correct:true},
+{text:"Utiliser un signal de bras vers l'extérieur et vers le haut", correct:false}
+]
+},
+{
+question:"53.) Lorsque vous suivez un véhicule d'urgence dont les feux ou la sirène sont activés, restez en arrière à une distance minimale de :",
+answers:[
+{text:"100 mètres", correct:false},
+{text:"75 mètres", correct:false},
+{text:"125 mètres", correct:false},
+{text:"150 mètres", correct:true}
+]
+},
+{
+question:"54.) Un véhicule qui sort d'un parking pour s'engager sur la chaussée :",
+answers:[
+{text:"Doit s'arrêter uniquement s'il y a un panneau d'arrêt", correct:false},
+{text:"N'est pas obligé de s'arrêter", correct:false},
+{text:"Ne doit s'arrêter avant de traverser le trottoir que s'il y a des piétons.", correct:false},
+{text:"Doit s'arrêter complètement", correct:true}
+]
+},
+{
+question:"55.) En milieu urbain, lorsqu'un piéton se tient sur un passage pour piétons, le bras levé à peu près perpendiculairement à son corps et pointant vers la bordure opposée, qu'est-ce que cela signifie ?",
+answers:[
+{text:"Les conducteurs doivent s'arrêter et céder le passage au piéton.", correct:true},
+{text:"Le piéton est malvoyant et a besoin d'aide pour traverser la route.", correct:false},
+{text:"Les conducteurs n'ont pas à céder le passage aux piétons avant qu'ils ne quittent le trottoir.", correct:false},
+{text:"Les conducteurs doivent réduire leur vitesse à 30 km/h et être prudents lorsqu'ils dépassent le piéton.", correct:false}
+]
+},
+{
+question:"56.) À quelle distance minimale les phares doivent-ils être baissés la nuit lorsqu'on s'approche d'un autre véhicule par l'arrière ?",
+answers:[
+{text:"60 mètres", correct:false},
+{text:"300 mètres", correct:false},
+{text:"150 mètres", correct:true},
+{text:"100 mètres", correct:false}
+]
+},
+{
+question:"57.) Ce panneau indique :",
+image:"images/img11.png",
+answers:[
+{text:"Voie de passage uniquement", correct:false},
+{text:"Dépassement autorisé", correct:false},
+{text:"Pas de virage autorisé", correct:false},
+{text:"Circulation à double sens", correct:true}
+]
+},
+{
+question:"58.) Dans le cadre du programme de permis de conduire progressif, un apprenti titulaire d'un permis de conduire de classe 7 est suspendu lorsqu'il accumule :",
+answers:[
+{text:"15 démérites", correct:false},
+{text:"12 démérites", correct:false},
+{text:"8 démérites", correct:true},
+{text:"7 démérites", correct:false}
+]
+},
+{
+question:"59.) Les panneaux de limitation de vitesse indiquent :",
+answers:[
+{text:"La vitesse à laquelle vous devez rouler dans toutes les conditions de conduite", correct:false},
+{text:"La vitesse minimale autorisée sur toutes les routes", correct:false},
+{text:"La vitesse maximale autorisée lorsque les conditions sont favorables", correct:true},
+{text:"La vitesse maximale autorisée sauf lors d'un dépassement", correct:false}
+]
+},
+{
+question:"60.) Une \"intersection non contrôlée\" :",
+answers:[
+{text:"Est équipée d'un feu jaune clignotant pour un sens de circulation et d'un feu rouge clignotant pour l'autre sens de circulation.", correct:false},
+{text:"Est équipée de panneaux de signalisation mais pas de feux de signalisation", correct:false},
+{text:"N'a pas de feux de signalisation ni de panneaux de signalisation", correct:true},
+{text:"A des panneaux \"Cédez le passage\" mais pas de panneaux \"Stop\"", correct:false}
+]
+},
+{
+question:"61.) Lorsqu'il fait face à un panneau de fusion, le conducteur doit :",
+answers:[
+{text:"S'arrêter à l'entrée de l'autre route et attendre qu'il y ait un vide dans la circulation avant de continuer.", correct:false},
+{text:"Regarder s'il y a un vide dans la circulation sur l'autoroute où il s'engage, s'adapter à la vitesse de l'autoroute dans la voie d'accélération et se fondre en douceur dans la circulation.", correct:true},
+{text:"S'arrêter et céder le passage aux véhicules déjà présents sur l'autoroute.", correct:false},
+{text:"Réduire la vitesse et procéder avec prudence", correct:false}
+]
+},
+{
+question:"62.) En cas de visibilité réduite due au brouillard, à la fumée ou à la neige, utilisez la :",
+answers:[
+{text:"Les feux de position", correct:false},
+{text:"Les phares en feux de route", correct:false},
+{text:"Feux de croisement", correct:true},
+{text:"Feux de circulation diurne", correct:false}
+]
+},
+{
+question:"63.) Ce signe indique :",
+image:"images/img12.png",
+answers:[
+{text:"Une route sinueuse devant vous", correct:false},
+{text:"Une intersection en T", correct:false},
+{text:"La route se rétrécit vers la droite", correct:false},
+{text:"Trafic convergent", correct:true}
+]
+},
+{
+question:"64.) Lorsque deux véhicules abordent un carrefour en T non contrôlé à angle droit l'un par rapport à l'autre, approximativement en même temps :",
+answers:[
+{text:"Le véhicule de gauche doit céder le passage.", correct:true},
+{text:"Le véhicule de gauche a la priorité de passage.", correct:false},
+{text:"Le véhicule qui va tout droit a toujours la priorité.", correct:false},
+{text:"Les deux véhicules doivent s'arrêter", correct:false}
+]
+},
+{
+question:"65.) Un conducteur est-il autorisé à tourner à droite à un feu rouge ?",
+answers:[
+{text:"Oui, mais seulement lorsqu'un panneau l'y autorise", correct:false},
+{text:"Oui, si le conducteur réduit sa vitesse, s'il n'y a pas de circulation ou de piéton dans l'intersection et si aucun panneau n'interdit ce virage.", correct:false},
+{text:"Oui, si le conducteur s'arrête et qu'il n'y a pas de circulation, de piéton ou de panneau interdisant un tel virage.", correct:true},
+{text:"Non, les virages à droite sur un feu rouge ne sont jamais autorisés.", correct:false}
+]
+},
+{
+question:"66.) La limitation de vitesse dans une zone de construction doit être respectée :",
+answers:[
+{text:"Seulement pendant la journée", correct:false},
+{text:"En tout temps", correct:true},
+{text:"Seulement lorsqu'un signaleur est posté à proximité", correct:false},
+{text:"Seulement lorsque des ouvriers de la construction sont présents", correct:false}
+]
+},
+{
+question:"67.) Ce panneau indique :",
+image:"images/img13.png",
+answers:[
+{text:"La voie est réservée à l'usage des véhicules spécifiés", correct:true},
+{text:"La circulation est à sens unique", correct:false},
+{text:"Véhicules de covoiturage uniquement", correct:false},
+{text:"La voie peut être utilisée pour les véhicules transportant des marchandises dangereuses", correct:false}
+]
+},
+{
+question:"68.) Lorsqu'un appuie-tête est relevé à la bonne position, le centre de l'appuie-tête est :",
+answers:[
+{text:"Au même niveau que le sommet de l'oreille", correct:true},
+{text:"Au même niveau que le haut des épaules", correct:false},
+{text:"Au niveau du cou", correct:false},
+{text:"Au niveau du sommet de la tête", correct:false}
+]
+},
+{
+question:"69.) Une voie d'accélération est :",
+answers:[
+{text:"La voie de gauche d'une autoroute à quatre voies, à utiliser pour dépasser les véhicules lents.", correct:false},
+{text:"Une voie sur les collines, destinée aux véhicules se déplaçant plus rapidement", correct:false},
+{text:"Une voie dans une zone de convergence, destinée aux véhicules qui s'engagent sur l'autoroute.", correct:true},
+{text:"Une voie avec un marquage en ligne brisée", correct:false}
+]
+},
+{
+question:"70.) Les demi-tours en milieu urbain ne sont pas autorisés à :",
+answers:[
+{text:"Une intersection avec des voies de circulation marquées", correct:false},
+{text:"Les routes avec un terre-plein central paysagé", correct:false},
+{text:"Une intersection contrôlée par un signal de contrôle de la circulation", correct:true},
+{text:"Une intersection contrôlée par des panneaux d'arrêt", correct:false}
+]
+},
+{
+question:"71.) Ce panneau indique :",
+image:"images/img14.png",
+answers:[
+{text:"La route se rétrécit, à gauche", correct:true},
+{text:"Circulation à double sens", correct:false},
+{text:"Fin de l'autoroute à deux voies", correct:false},
+{text:"Obstruction - rester à gauche", correct:false}
+]
+},
+{
+question:"72.) Ce panneau indique :",
+image:"images/img15.png",
+answers:[
+{text:"Des bandes rugueuses", correct:false},
+{text:"Une zone de construction", correct:false},
+{text:"Bump Chaussée cahoteuse", correct:true},
+{text:"Extrémités de chaussée", correct:false}
+]
+},
+{
+question:"73.) Dans le cadre du programme de permis de conduire progressif, quelle est la durée minimale pendant laquelle une personne doit être un conducteur probatoire de classe 5 ?",
+answers:[
+{text:"6 mois", correct:false},
+{text:"18 mois", correct:false},
+{text:"2 ans", correct:true},
+{text:"1 an", correct:false}
+]
+},
+{
+question:"74.) Un conducteur est tenu de signaler toute collision à la police lorsque des personnes ont été blessées ou tuées, ou lorsque les dommages combinés à tous les véhicules ou à la propriété sont supérieurs à :",
+answers:[
+{text:"750 $", correct:false},
+{text:"1 000 $", correct:true},
+{text:"250 $", correct:false},
+{text:"500 $", correct:false}
+]
+},
+{
+question:"75.) Si un autre véhicule suit de trop près, que doit faire un conducteur ?",
+answers:[
+{text:"Ralentir progressivement et encourager l'autre véhicule à passer.", correct:true},
+{text:"Appuyer fortement sur la pédale de frein", correct:false},
+{text:"Augmenter la vitesse jusqu'à 10 km/h au-dessus de la limite de vitesse affichée.", correct:false},
+{text:"Activez les feux de détresse", correct:false}
+]
+},
+{
+question:"76.) Un conducteur qui tente de tourner à gauche à un feu vert fixe :",
+answers:[
+{text:"A la priorité sur la circulation en sens inverse", correct:false},
+{text:"Doit s'arrêter avant la ligne du passage pour piétons, puis poursuivre sa route.", correct:false},
+{text:"A la priorité sur les piétons", correct:false},
+{text:"Ne doit pas traverser la voie d'un véhicule qui s'approche, à moins que ce ne soit sans danger.", correct:true}
+]
+},
+{
+question:"77.) Un examinateur de conduite refusera un examen sur route si :",
+answers:[
+{text:"Le véhicule a une capacité de plus de 7 places assises", correct:false},
+{text:"Le véhicule est enregistré comme véhicule agricole", correct:false},
+{text:"Le véhicule est un véhicule de location", correct:false},
+{text:"Le véhicule n'est pas mécaniquement sûr", correct:true}
+]
+},
+{
+question:"78.) Ce panneau indique :",
+image:"images/img16.png",
+answers:[
+{text:"Des enfants jouent dans une zone résidentielle", correct:false},
+{text:"Passage pour piétons à venir", correct:true},
+{text:"Zone scolaire", correct:false},
+{text:"Zone de la cour de récréation", correct:false}
+]
+},
+{
+question:"79.) Lorsqu'il dépasse un gros camion sur une route à double sens, le conducteur doit :",
+answers:[
+{text:"Retourner sur sa voie lorsque le camion n'est plus visible dans aucun de ses rétroviseurs.", correct:false},
+{text:"Retourner sur sa voie une fois qu'il a dépassé le pare-chocs avant du camion.", correct:false},
+{text:"Retourner sur sa voie au signal des phares du camion.", correct:false},
+{text:"Laisser un espace supplémentaire avant de retourner sur sa voie", correct:true}
+]
+},
+{
+question:"80.) Dans un véhicule qui n'est pas équipé de freins antiblocage, le freinage au seuil fait référence à :",
+answers:[
+{text:"Appliquer une force de freinage régulière jusqu'au point juste avant le blocage des roues, et relâcher légèrement si les roues se bloquent.", correct:true},
+{text:"Pomper la pédale de frein à plusieurs reprises jusqu'à ce que le véhicule s'arrête.", correct:false},
+{text:"Relâcher la pression sur la pédale de frein, puis la réappliquer jusqu'à ce que les roues se bloquent.", correct:false},
+{text:"Appliquer une force suffisante sur la pédale de frein pour bloquer les roues et les maintenir bloquées.", correct:false}
+]
+},
+{
+question:"81.) Lorsque le véhicule d'un conducteur est approché par un véhicule d'urgence faisant retentir une sirène, de n'importe quelle direction sur une route à double sens, le conducteur doit :",
+answers:[
+{text:"Continuer à vitesse réduite et laisser un espace suffisant pour que le véhicule d'urgence puisse passer.", correct:true},
+{text:"Allumer ses feux de détresse à quatre voies", correct:false},
+{text:"S'arrêter uniquement lorsque le véhicule d'urgence a du mal à passer.", correct:false},
+{text:"Se rapprochent le plus possible de la bordure ou du bord droit de la route et s'arrêtent", correct:false}
+]
+},
+{
+question:"82.) En Alberta, la loi exige le port de la ceinture de sécurité :",
+answers:[
+{text:"Seulement pendant le transport de passagers", correct:false},
+{text:"De façon appropriée en tout temps", correct:true},
+{text:"Uniquement lorsque vous roulez à grande vitesse", correct:false},
+{text:"Seulement lorsque vous conduisez en ville", correct:false}
+]
+},
+{
+question:"83.) Ce panneau indique :",
+image:"images/img17.png",
+answers:[
+{text:"Camions lourds seulement", correct:false},
+{text:"Ne pas passer", correct:true},
+{text:"Aucun véhicule autorisé", correct:false},
+{text:"Ne pas entrer", correct:false}
+]
+},
+{
+question:"84.) Un conducteur s'engageant dans un rond-point :",
+answers:[
+{text:"Doit céder le passage à la circulation de droite", correct:false},
+{text:"Doit céder le passage aux véhicules se trouvant dans le rond-point", correct:true},
+{text:"A la priorité de passage", correct:false},
+{text:"Doit utiliser la règle de courtoisie et céder le passage au véhicule qui est arrivé en premier.", correct:false}
+]
+},
+{
+question:"85.) Lorsque l'on tourne à gauche d'une route à double sens vers une route à sens unique, sur quelle voie le véhicule doit-il s'engager ?",
+answers:[
+{text:"La voie située immédiatement à droite du centre", correct:false},
+{text:"La voie la plus proche de la bordure du côté gauche de la route à sens unique.", correct:true},
+{text:"La voie centrale de la route à sens unique", correct:false},
+{text:"La voie de droite de la route à sens unique", correct:false}
+]
+},
+{
+question:"86.) Dans quel sens les roues avant d'un véhicule doivent-elles être tournées lorsqu'il est garé en montée sur une route à double sens avec une bordure ?",
+answers:[
+{text:"Parallèle à la bordure", correct:false},
+{text:"Vers la gauche", correct:true},
+{text:"Droit devant", correct:false},
+{text:"Vers la droite", correct:false}
+]
+},
+{
+question:"87.) Ce signe indique :",
+image:"images/img18.png",
+answers:[
+{text:"La fin de la chaussée", correct:false},
+{text:"Une zone de construction", correct:false},
+{text:"Impasse", correct:true},
+{text:"Marqueur de danger", correct:false}
+]
+},
+{
+question:"88.) Le contrôle des épaules signifie :",
+answers:[
+{text:"Regarder dans le rétroviseur extérieur droit", correct:false},
+{text:"Regarder dans le rétroviseur extérieur gauche", correct:false},
+{text:"En regardant vers l'angle mort dans la direction où le conducteur a l'intention de se déplacer.", correct:true},
+{text:"En regardant à la fois dans le rétroviseur intérieur et dans le rétroviseur extérieur.", correct:false}
+]
+},
+{
+question:"89.) Ce signe indique :",
+image:"images/img19.png",
+answers:[
+{text:"La fin d'une route à chaussées séparées", correct:false},
+{text:"Le début de la route à chaussées séparées", correct:true},
+{text:"Obstacle - passer à gauche", correct:false},
+{text:"Circulation à double sens", correct:false}
+]
+},
+{
+question:"90.) Utiliser la règle des 2 secondes pour juger d'une distance de suivi sûre en conduisant :",
+answers:[
+{text:"N'est pas exacte à des vitesses supérieures à 100 km/h", correct:false},
+{text:"Est plus précise sur les routes de campagne que dans les centres urbains.", correct:false},
+{text:"N'est pas précis à des vitesses inférieures à 30 km/h", correct:false},
+{text:"Est précis à n'importe quelle vitesse", correct:true}
+]
+},
+{
+question:"91.) Lorsque vous approchez d'un carrefour affichant un feu de circulation jaune fixe :",
+answers:[
+{text:"Continuez puisque le feu est sur le point de passer au vert.", correct:false},
+{text:"Cédez le passage aux véhicules de droite", correct:false},
+{text:"S'arrêter avant l'intersection, sauf si l'arrêt ne peut être effectué en toute sécurité.", correct:true},
+{text:"Accroître la vitesse pour franchir l'intersection", correct:false}
+]
+},
+{
+question:"92.) Une ligne jaune continue ainsi que la ligne jaune discontinue marquées au centre d'une route signifient :",
+answers:[
+{text:"La route se rétrécit devant vous", correct:false},
+{text:"Si la ligne continue se trouve de votre côté, le dépassement est autorisé.", correct:false},
+{text:"Si la ligne discontinue se trouve de votre côté, le dépassement est interdit.", correct:false},
+{text:"Si la ligne discontinue est de votre côté, la passe est autorisée.", correct:true}
+]
+},
+{
+question:"93.) À 9 heures un jour d'école, quelle est la vitesse maximale autorisée dans une zone scolaire en milieu rural, sauf indication contraire ?",
+answers:[
+{text:"50 km/h", correct:false},
+{text:"20 km/h", correct:false},
+{text:"40 km/h", correct:false},
+{text:"30 km/h", correct:true}
+]
+},
+{
+question:"94.) Sur une route à deux voies, lorsqu'il dépasse d'autres véhicules circulant dans les mêmes directions, un conducteur :",
+answers:[
+{text:"Doit dépasser par la gauche lorsqu'il peut le faire en toute sécurité", correct:true},
+{text:"Doit passer à droite lorsqu'il peut le faire en toute sécurité", correct:false},
+{text:"Doit toujours rouler 30 km/h plus vite que le véhicule qu'il dépasse.", correct:false},
+{text:"Ne doivent pas s'arrêter pour doubler avant d'être à moins de 3 mètres du véhicule à doubler.", correct:false}
+]
+},
+{
+question:"95.) Le stationnement sur une place réservée aux personnes handicapées est autorisé :",
+answers:[
+{text:"Lorsque le conducteur attend dans son véhicule", correct:false},
+{text:"Lorsque le véhicule est muni d'une plaque d'identification ou d'une plaque d'immatriculation appropriée.", correct:true},
+{text:"Lorsque toutes les autres places de stationnement sont occupées", correct:false},
+{text:"Lorsqu'un conducteur s'arrête pendant moins de 5 minutes", correct:false}
+]
+},
+{
+question:"96.) Ce panneau indique :",
+image:"images/img20.png",
+answers:[
+{text:"Les installations hors route", correct:false},
+{text:"Des services hospitaliers", correct:true},
+{text:"Services hôteliers", correct:false},
+{text:"Balisage de la route principale", correct:false}
+]
+},
+{
+question:"97.) À quelle distance minimale d'une borne d'incendie un véhicule doit-il être garé ?",
+answers:[
+{text:"3 mètres", correct:false},
+{text:"4 mètres", correct:false},
+{text:"2 mètres", correct:false},
+{text:"5 mètres", correct:true}
+]
+},
+{
+question:"98.) Ce panneau indique :",
+image:"images/img21.png",
+answers:[
+{text:"Panneau de construction, signaleur devant", correct:false},
+{text:"Panneau de construction, déviation à venir", correct:false},
+{text:"Attention, chute de pierres droit devant", correct:false},
+{text:"Panneau de construction, personnes travaillant devant", correct:true}
+]
+},
+{
+question:"99.) Lorsqu'il circule sur la voie de droite d'une autoroute, que doit faire le conducteur si un autre véhicule tente de passer de la voie d'accélération à la voie de droite ?",
+answers:[
+{text:"Se placer sur la voie de gauche, s'il est possible de le faire en toute sécurité, ou être prêt à modifier sa vitesse.", correct:true},
+{text:"S'arrêter pour laisser passer l'autre véhicule", correct:false},
+{text:"Accélérer pour combler tout écart dans le flux de circulation.", correct:false},
+{text:"Insister pour que l'autre véhicule cède la priorité.", correct:false}
+]
+},
+{
+question:"100.) Lorsqu'il s'approche de l'arrière d'un autobus scolaire qui affiche des feux clignotants alternatifs de couleur ambre, un conducteur doit :",
+answers:[
+{text:"Se préparer à s'arrêter car il s'agit d'un avertissement que les feux rouges clignotants alternatifs s'allumeront une fois que l'autobus sera arrêté.", correct:false},
+{text:"S'arrêter immédiatement parce que l'autobus scolaire est en train de charger ou de décharger des élèves.", correct:true},
+{text:"Préparez-vous à vous arrêter car il peut s'agir d'un avertissement indiquant qu'il y a une collision devant vous et que la circulation s'est arrêtée.", correct:false},
+{text:"Soyez prudent car l'autobus scolaire s'approche d'un passage à niveau et est sur le point de s'arrêter.", correct:false}
+]
+},
+{
+question:"101.) Sauf indication contraire, les limitations de vitesse dans les zones scolaires sont en vigueur les jours d'école pendant les heures suivantes :",
+answers:[
+{text:"8h00 à 16h30", correct:false},
+{text:"de 8 h 30 à 9 h 30, de 12 h à 13 h et de 15 h 30 à 16 h.", correct:false},
+{text:"De 8h00 à 9h30, de 11h30 à 13h30 et de 15h00 à 16h30.", correct:true},
+{text:"De 8h30 à 1 heure après le coucher du soleil", correct:false}
+]
+},
+{
+question:"102.) Les zones de terrain de jeu sont en vigueur :",
+answers:[
+{text:"De 8h30 à 1 heure après le coucher du soleil", correct:true},
+{text:"Seulement à la sortie de l'école à midi et après 16h30", correct:false},
+{text:"Pendant la journée et jusqu'à 23h00", correct:false},
+{text:"De 8h00 à 20h00", correct:false}
+]
+},
+{
+question:"103.) Sauf autorisation contraire, sur quelle voie doit se trouver un conducteur pour tourner à gauche sur une route à sens unique ?",
+answers:[
+{text:"La voie située à droite du centre", correct:false},
+{text:"La voie de gauche la plus proche du trottoir de gauche", correct:true},
+{text:"La voie la plus proche de la bordure de droite", correct:false},
+{text:"La voie centrale", correct:false}
+]
+},
+{
+question:"104.) Ce panneau indique :",
+image:"images/img22.png",
+answers:[
+{text:"La fin de la voie, la perte de la voie de droite", correct:true},
+{text:"Voie ajoutée (circulation libre)", correct:false},
+{text:"Virage à droite", correct:false},
+{text:"Double voie de virage devant", correct:false}
+]
+},
+{
+question:"105.) Dans le cadre du programme de permis de conduire progressif, un apprenti titulaire d'un permis de classe 7 n'est pas autorisé à conduire un véhicule entre les heures de :",
+answers:[
+{text:"9 h 00 et 17 h 00", correct:false},
+{text:"minuit et 5 heures du matin", correct:true},
+{text:"22h00 et 6h00", correct:false},
+{text:"Minuit et 7 heures du matin", correct:false}
+]
+},
+{
+question:"106.) Lorsqu'il approche d'une intersection et qu'il fait face à un feu de signalisation qui affiche une flèche verte de virage à droite et un feu rouge, un conducteur :",
+answers:[
+{text:"Doit s'arrêter et attendre un feu vert avant de tourner dans la direction de la flèche", correct:false},
+{text:"Peut avancer en toute sécurité, sans s'arrêter, dans la direction de la flèche.", correct:true},
+{text:"Peut traverser l'intersection sans s'arrêter", correct:false},
+{text:"Peut tourner à gauche sans s'arrêter", correct:false}
+]
+},
+{
+question:"107.) Ce panneau indique :",
+image:"images/img23.png",
+answers:[
+{text:"La zone de l'aire de jeux", correct:false},
+{text:"Un passage pour piétons", correct:true},
+{text:"Arrêt d'autobus scolaire désigné", correct:false},
+{text:"Zone scolaire", correct:false}
+]
+},
+{
+question:"108.) Lors de la récupération d'un dérapage, le conducteur doit :",
+answers:[
+{text:"Accélérer et braquer dans la direction opposée au dérapage.", correct:false},
+{text:"Freiner et tenir fermement le volant", correct:false},
+{text:"Diriger le véhicule dans la direction où le conducteur souhaite que l'avant du véhicule aille.", correct:true},
+{text:"Freiner et contre-braquer", correct:false}
+]
+},
+{
+question:"109.) Lorsqu'il s'approche de l'arrière d'un autobus scolaire arrêté dont les feux rouges à clignotement alternatif sont activés, un conducteur doit :",
+answers:[
+{text:"Actionner le klaxon pour alerter les piétons et passer à vitesse réduite.", correct:false},
+{text:"S'arrêter derrière l'autobus et attendre que les feux rouges clignotants cessent de clignoter.", correct:true},
+{text:"Se placer sur la voie de gauche, réduire la vitesse à 30 km/h et passer avec prudence.", correct:false},
+{text:"S'arrêter derrière le bus, regarder attentivement s'il y a des piétons et, si la voie est libre, passer lentement devant le bus.", correct:false}
+]
+},
+{
+question:"110.) Ce panneau indique :",
+image:"images/img24.png",
+answers:[
+{text:"Une intersection en T", correct:true},
+{text:"La fin d'une voie de circulation", correct:false},
+{text:"Intersection cachée", correct:false},
+{text:"Camions entrant sur l'autoroute devant", correct:false}
+]
+},
+{
+question:"111.) Lorsque vous approchez du sommet d'une colline sur une autoroute à deux voies :",
+answers:[
+{text:"Le dépassement de la limite de vitesse est autorisé", correct:false},
+{text:"Faire clignoter les phares pour avertir les véhicules venant en sens inverse", correct:false},
+{text:"Rester sur la partie droite de la voie", correct:true},
+{text:"Restez près de la ligne médiane pour empêcher les autres de passer.", correct:false}
+]
+}
+];
+
+let currentQuestion = 0;
+let score = 0;
+let errors = 0;
+let userAnswers = Array(questions.length).fill(null);
+
+const quiz = document.getElementById("quiz");
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+const skipBtn = document.getElementById("skipBtn");
+const scoreEl = document.getElementById("score");
+const errorsEl = document.getElementById("errors");
+const questionNumberEl = document.getElementById("questionNumber");
+
+function showQuestion(){
+    quiz.innerHTML = "";
+    nextBtn.style.display = "none";
+
+    const q = questions[currentQuestion];
+    questionNumberEl.textContent = `Question ${currentQuestion+1}/${questions.length}`;
+
+    // Question
+    quiz.innerHTML = "<h3>"+q.question+"</h3>";
+
+    if(q.image){
+        const img = document.createElement("img");
+        img.src = q.image;
+        quiz.appendChild(img);
+    }
+
+    q.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        const letter = String.fromCharCode(97 + index); // a, b, c, d
+        btn.textContent = `${letter}. ${answer.text}`;
+
+        btn.onclick = () => selectAnswer(btn, answer);
+
+        // Si question déjà répondue
+        if(userAnswers[currentQuestion]){
+            btn.disabled = true;
+            if(answer.text === userAnswers[currentQuestion].selected){
+                btn.classList.add(answer.correct ? "correct" : "wrong");
+            }
+            if(answer.correct && answer.text !== userAnswers[currentQuestion].selected){
+                btn.classList.add("correct");
+            }
+        }
+
+        quiz.appendChild(btn);
+    });
+}
+
+function selectAnswer(button, answer){
+    const buttons = quiz.querySelectorAll("button");
+    buttons.forEach(b=>b.disabled=true);
+
+    const correctAnswer = questions[currentQuestion].answers.find(a=>a.correct).text;
+
+    if(answer.correct){
+        button.classList.add("correct");
+        score++;
+    } else {
+        button.classList.add("wrong");
+        errors++;
+        const info = document.createElement("p");
+        info.innerHTML = "<b>Bonne réponse :</b> "+correctAnswer;
+        quiz.appendChild(info);
+    }
+
+    scoreEl.textContent = score;
+    errorsEl.textContent = errors;
+
+    userAnswers[currentQuestion] = {selected: answer.text, correct: answer.correct};
+
+    nextBtn.style.display = "block";
+}
+
+nextBtn.onclick = () => {
+    if(currentQuestion < questions.length -1){
+        currentQuestion++;
+        showQuestion();
+    } else {
+        quiz.innerHTML = "";
+        nextBtn.style.display = "none";
+        prevBtn.style.display = "none";
+        skipBtn.style.display = "none";
+        document.getElementById("result").innerHTML = `Test terminé !<br>Score : ${score} / ${questions.length}<br>Erreurs : ${errors}`;
+    }
+};
+
+prevBtn.onclick = () => {
+    if(currentQuestion > 0){
+        currentQuestion--;
+        showQuestion();
+    }
+};
+
+skipBtn.onclick = () => {
+    if(!userAnswers[currentQuestion]){
+        errors++;
+        errorsEl.textContent = errors;
+        const correctAnswer = questions[currentQuestion].answers.find(a=>a.correct).text;
+        alert(`Question passée ! La bonne réponse était : ${correctAnswer}`);
+        userAnswers[currentQuestion] = {selected:null, correct:false};
+    }
+    if(currentQuestion < questions.length-1){
+        currentQuestion++;
+        showQuestion();
+    }
+};
+
+showQuestion();
+</script>
+</body>
+</html>
